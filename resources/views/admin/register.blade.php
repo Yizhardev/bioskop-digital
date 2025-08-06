@@ -50,7 +50,7 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="btn btn-success w-100 py-2 mb-3">
+                            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
                                 <i class="fas fa-user-plus me-2"></i>Register
                             </button>
                         </form>

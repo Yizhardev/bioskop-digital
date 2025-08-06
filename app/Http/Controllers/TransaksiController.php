@@ -36,7 +36,7 @@ public function create($id)
     $total = $jumlah * $hargaPerTiket;
     $order_id = 'TIKET-' . strtoupper(Str::random(8));
 
-    // Simpan ke DB
+
     $transaction = Transaksi::create([
         'user_id' => $user->id,
         'film_id' => $film->id,
@@ -46,7 +46,7 @@ public function create($id)
         'status' => 'pending'
     ]);
 
-    // Konfigurasi Midtrans
+
     \Midtrans\Config::$serverKey = config('midtrans.server_key');
     \Midtrans\Config::$isProduction = config('midtrans.is_production');
     \Midtrans\Config::$isSanitized = config('midtrans.is_sanitized');
@@ -75,11 +75,11 @@ public function etiket()
 {
     $user = Auth::user();
 
-    // Ambil transaksi terakhir user (atau bisa semua histori kalau kamu mau)
+    
     $transaksi = Transaksi::with('film')
         ->where('user_id', $user->id)
         ->orderBy('created_at', 'desc')
-        ->first(); // atau ->get() kalau mau tampilkan semua transaksi
+        ->first();
 
     if (!$transaksi) {
         return redirect()->route('member.dashboard')->with('error', 'Belum ada transaksi.');

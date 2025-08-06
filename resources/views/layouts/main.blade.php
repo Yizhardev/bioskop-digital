@@ -42,15 +42,14 @@
             <hr class="sidebar-divider my-0">
 
             <!-- Nav Item - Dashboard -->
-            @if (Auth::user()->role == 'admin' || Auth::user()->role == 'pegawai')
-
+            @if (Auth::check() && (Auth::user()->role == 'admin' || Auth::user()->role == 'pegawai'))
 
             <li class="nav-item active">
                 <a class="nav-link" href="{{ route('admin.dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
                     <span>Dashboard</span></a>
             </li>
-            @elseif (Auth::user()->role == 'user')
+            @elseif (Auth::check() && Auth::user()->role == 'user')
             <li class="nav-item active">
                 <a class="nav-link" href="{{ route('member.dashboard') }}">
                     <i class="fas fa-fw fa-tachometer-alt"></i>
@@ -66,7 +65,7 @@
             </div>
 
             <!-- Nav Item - Pages Collapse Menu -->
-            @if (Auth::user()->role == 'admin' || Auth::user()->role == 'pegawai')
+            @if (Auth::check() && (Auth::user()->role == 'admin' || Auth::user()->role == 'pegawai'))
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseTwo"
                     aria-expanded="true" aria-controls="collapseTwo">
@@ -97,9 +96,10 @@
             <div class="sidebar-heading">
                 Addons
             </div>
-@endif
+            @endif
+
             <!-- Nav Item - Pages Collapse Menu -->
-            @if (Auth::user()->role == 'admin')
+            @if (Auth::check() && Auth::user()->role == 'admin')
             <li class="nav-item">
                 <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
                     aria-expanded="true" aria-controls="collapsePages">
@@ -115,9 +115,9 @@
                     </div>
                 </div>
             </li>
-@endif
-            @if (Auth::user()->role == 'user')
+            @endif
 
+            @if (Auth::check() && Auth::user()->role == 'user')
 
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('member.history') }}">
@@ -321,7 +321,9 @@
                         <li class="nav-item dropdown no-arrow">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
                                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{ Auth::user()->role }}</span>
+                                <span class="mr-2 d-none d-lg-inline text-gray-600 small">
+                                    {{ Auth::check() ? Auth::user()->role : 'Guest' }}
+                                </span>
                                 <img class="img-profile rounded-circle"
                                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRtm1FCyFZkYmgYFpO5rqMCH-9qNtRaMOCWFA&s">
                             </a>
@@ -341,10 +343,17 @@
                                     Activity Log
                                 </a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item" href="{{ route('logout') }}" data-toggle="modal" data-target="#logoutModal">
-                                    <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                                    Logout
-                                </a>
+                                @if(Auth::check())
+                                    <a class="dropdown-item" href="{{ route('logout') }}" data-toggle="modal" data-target="#logoutModal">
+                                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Logout
+                                    </a>
+                                @else
+                                    <a class="dropdown-item" href="/login">
+                                        <i class="fas fa-sign-in-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                                        Login
+                                    </a>
+                                @endif
                             </div>
                         </li>
 
@@ -393,6 +402,7 @@
     </a>
 
     <!-- Logout Modal-->
+    @if(Auth::check())
     <div class="modal fade" id="logoutModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -411,6 +421,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <!-- Bootstrap core JavaScript-->
     <script src="{{ asset('dist/vendor/jquery/jquery.min.js')}}"></script>
@@ -423,8 +434,6 @@
     <script src="{{ asset('dist/js/sb-admin-2.min.js') }}"></script>
 
     <!-- Page level plugins -->
-
-
 
    <script>
   function previewPoster() {

@@ -17,6 +17,7 @@
               <th>Nama</th>
               <th>Email</th>
               <th>Dibuat</th>
+              <th>Role</th>
               <th>Aksi</th>
             </tr>
           </thead>
@@ -27,6 +28,7 @@
               <td>{{ $d->name }}</td>
               <td>{{ $d->email }}</td>
               <td>{{ $d->created_at->format('d-m-Y') }}</td>
+              <td>{{ $d->role }}</td>
               <td>
                 <a href="{{ route('admin.editUser', $d->id) }}" class="btn btn-warning btn-sm">Edit</a>
                 <form action="{{ route('admin.hapus', $d->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus user ini?')">

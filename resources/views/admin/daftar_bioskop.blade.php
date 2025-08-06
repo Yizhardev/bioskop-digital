@@ -16,7 +16,9 @@
                             <th>Foto</th>
                             <th>Nama bioskop</th>
                             <th>Alamat</th>
+                            <th>Deskripsi</th>
                             <th>Kota</th>
+                            <th>Harga Sewa / 3 jam</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -26,7 +28,9 @@
                             <td><img src="{{ asset('uploads/bioskop/' . $b->foto) }}" width="100" alt="foto"></td>
                             <td>{{ $b->nama_bioskop }}</td>
                             <td>{{ $b->alamat }}</td>
+                            <td>{{ Str::limit($b->deskripsi, 50) }}</td>
                             <td>{{ $b->kota }}</td>
+                            <td> Rp. {{ number_format($b->harga_sewa) }}</td>
                             <td>
                                 <a href="{{ route('admin.bioskopEdit', $b->id) }}" class="btn btn-warning btn-sm">Edit</a>
 

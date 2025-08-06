@@ -10,5 +10,5 @@ class Film extends Model
     use HasFactory;
     protected $fillable = ['judul', 'sinopsis', 'genre', 'tahun', 'poster'];
 
-    
+        
 }

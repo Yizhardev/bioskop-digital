@@ -27,8 +27,3 @@
     </div>
 </div>
 @endsection
-@section('scripts')
-    <script>
-    const dataPembelian = @json($dataChart);
-</script>
-@endsection

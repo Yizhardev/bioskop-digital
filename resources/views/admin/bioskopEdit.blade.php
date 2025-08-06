@@ -45,6 +45,11 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="harga_sewa">Harga Sewa / 3 jam</label>
+                        <input type="number" name="harga_sewa" value="{{ $bioskop->harga_sewa }}" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="foto">Foto</label>
                         <input type="file" name="foto" onchange="previewPoster()" class="form-control" required>
                     </div>

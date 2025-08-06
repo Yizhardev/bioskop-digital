@@ -1,5 +1,6 @@
 @extends('layouts.main')
 @section('info')
+@if (Auth::user()->role == 'admin')
     <div class="container-fluid">
         <h1 class="h3 mb-4 text-gray-800">Daftar Produk Film</h1>
         <div class="card shadow mb-4">
@@ -31,6 +32,7 @@
                 </div>
             </div>
         </div>
+        @endif
         <div class="row">
 
             @foreach ($films as $f)
@@ -52,10 +54,11 @@
     </div>
 
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const dataChart = @json($dataChart);
     console.log('Data Chart:', dataChart);

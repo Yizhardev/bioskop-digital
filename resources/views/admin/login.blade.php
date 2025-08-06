@@ -37,7 +37,7 @@
                                         placeholder="Password" required>
                                 </div>
                             </div>
-                        
+
 
                             <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
                                 <i class="fas fa-sign-in-alt me-2"></i>Login
@@ -45,6 +45,7 @@
                         </form>
 
                         <div class="text-center text-muted">
+                            <small>Do you have account? <a href="{{ route('register') }}">Register here</a></small><br>
                             <small>© 2023 Your Company. All rights reserved.</small>
                         </div>
                     </div>

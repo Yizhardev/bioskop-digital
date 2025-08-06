@@ -25,38 +25,52 @@ class KontenController extends Controller
     }
 
     public function filmPost(Request $request){
-        $validated = $request->validate([
-            'judul' => 'required|string',
-            'sinopsis' => 'required|string|max:255',
-            'genre' => 'required|string|max:100',
-            'tahun' => 'required|date',
-            'poster' => 'nullable|image',
-        ]);
+    $validated = $request->validate([
+        'judul' => 'required|string',
+        'sinopsis' => 'required|string|max:255',
+        'genre' => 'required|string|max:100',
+        'tahun' => 'required|date',
+        'poster' => 'nullable|image',
+    ]);
 
-        $tempat_poster = null;
-
-        if ($request->hasFile('poster')) {
-            $file = $request->file('poster');
-            $tempat_poster = time() . '.' . $file->getClientOriginalExtension();
-            $file->move(public_path('uploads'), $tempat_poster);
-        }
-
-        Film::create([
-            'judul' => $validated['judul'],
-            'sinopsis' => $validated['sinopsis'],
-            'genre' => $validated['genre'],
-            'tahun' => $validated['tahun'],
-            'poster' => $tempat_poster,
-        ]);
-
-        return redirect()->route('admin.film')->with('succes', 'Film berhasil di tambahkan');
+    $tempat_poster = null;
+    if ($request->hasFile('poster')) {
+        $file = $request->file('poster');
+        $tempat_poster = time() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('uploads'), $tempat_poster);
     }
 
-    public function hapus($id){
+    $film = Film::create([
+        'judul' => $validated['judul'],
+        'sinopsis' => $validated['sinopsis'],
+        'genre' => $validated['genre'],
+        'tahun' => $validated['tahun'],
+        'poster' => $tempat_poster,
+    ]);
+
+    if ($request->expectsJson() || $request->is('api/*')) {
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Film berhasil ditambahkan',
+        'data' => $film
+    ]);
+}
+    return redirect()->route('admin.film');
+
+}
+
+    public function hapus(Request $request, $id){
         $film = Film::findOrFail($id);
         $film->delete();
 
-        return redirect()->route('admin.film')->with('succes', 'Film berhasil di tambahkan');
+        if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Film berhasil dihapus',
+            'data' => $film,
+        ]);
+    }
+    return redirect()->route('admin.film');
     }
 
     public function filmEdit($id){
@@ -75,14 +89,14 @@ public function edit(Request $request, $id){
         'poster' => 'nullable|image',
     ]);
 
-    // Update semua field yang divalidasi
+
     $film->judul = $request->judul;
-    $film->sinopsis = $request->sinopsis;  // Field ini hilang
-    $film->genre = $request->genre;        // Field ini hilang
-    $film->tahun = $request->tahun;        // Field ini hilang
+    $film->sinopsis = $request->sinopsis;
+    $film->genre = $request->genre;
+    $film->tahun = $request->tahun;
 
     if ($request->hasFile('poster')){
-        // Hapus file lama jika ada
+
         if ($film->poster && file_exists(public_path('uploads/'. $film->poster))){
             unlink(public_path('uploads/'. $film->poster));
         }
@@ -94,7 +108,7 @@ public function edit(Request $request, $id){
     }
 
     $film->save();
-    return redirect()->route('admin.film'); // Typo 'succes' -> 'success'
+    return redirect()->route('admin.film');
 }
 public function bioskop(){
     $bioskop = Bioskop::get();
@@ -120,7 +134,7 @@ public function bioskopPost(Request $request)
 
     $hargaSewa = 'Rp ' . number_format($validate['harga_sewa'], 0, ',', '.');
 
-    // Simpan foto utama
+
     $fotoUtama = null;
     if ($request->hasFile('foto')) {
         $file = $request->file('foto');
@@ -128,18 +142,19 @@ public function bioskopPost(Request $request)
         $file->move(public_path('uploads/bioskop'), $fotoUtama);
     }
 
-    // Buat entri bioskop
+
     $bioskop = Bioskop::create([
         'nama_bioskop' => $validate['nama_bioskop'],
         'alamat' => $validate['alamat'],
         'kota' => $validate['kota'],
         'foto' => $fotoUtama,
         'kapasitas' => $validate['kapasitas'],
+        'deskripsi' => $validate['deskripsi'],
         'harga_sewa' => $hargaSewa,
         'deskripsi' => $validate['deskripsi'],
     ]);
 
-    // Simpan galeri tambahan (jika ada)
+
     if ($request->hasFile('galeri')) {
         foreach ($request->file('galeri') as $index => $galeri) {
             $namaFile = time() . '_' . uniqid() . '.' . $galeri->getClientOriginalExtension();
@@ -152,8 +167,14 @@ public function bioskopPost(Request $request)
             ]);
         }
     }
-
-    return redirect()->route('admin.bioskop')->with('success', 'Bioskop berhasil ditambahkan');
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bioskop berhasil ditambahkan',
+            'data' => $bioskop,
+        ]);
+    }
+    return redirect()->route('admin.bioskop');
 }
 
 public function bioskopEdit($id){
@@ -169,6 +190,9 @@ public function bioskopEP(Request $request, $id){
         'alamat' => 'required|string',
         'kota' => 'required|string|max:50',
         'foto' => 'nullable|image',
+        'kapasitas' => 'required|integer',
+        'deskripsi' => 'required|string',
+        'harga_sewa' => 'required|numeric|min:0',
     ]);
 
     $bioskop->nama_bioskop = $request->nama_bioskop;
@@ -185,18 +209,35 @@ public function bioskopEP(Request $request, $id){
     $nama_bioskop = $request->nama_bioskop;
     $bioskop->alamat = $request->alamat;
     $bioskop->kota = $request->kota;
+    $bioskop->kapasitas = $request->kapasitas;
+    $bioskop->deskripsi = $request->deskripsi;
+    $bioskop->harga_sewa = 'Rp ' . number_format($request->harga_sewa, 0, ',', '.');
     $bioskop->save();
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bioskop berhasil diperbarui',
+            'data' => $bioskop,
+        ]);
+    }
     return redirect()->route('admin.bioskop');
 }
-public function hapusBioskop($id){
+
+public function hapusBioskop(Request $request,$id){
     $bioskop = Bioskop::findOrFail($id);
     $bioskop->delete();
-    return redirect()->route('admin.bioskop')->with('succes', 'Film berhasil di dihapus');
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Bioskop berhasil dihapus',
+            'data' => $bioskop,
+        ]);
+    }
+    return redirect()->route('admin.bioskop');
     }
 
-// METHOD BERITA YANG SUDAH DIPERBARUI DENGAN PAGINATION
+
 public function berita(Request $request = null){
-    // Menggunakan paginate() dengan 10 item per halaman
     $berita = Berita::orderBy('created_at', 'desc')->paginate(10);
     return view('admin.berita', compact('berita'));
 }
@@ -217,6 +258,7 @@ public function beritaUp(Request $request){
         'gambar_berita' => 'nullable|image',
     ]);
 
+
     $tempat_berita = null;
 
     if ($request->hasfile('gambar_berita')){
@@ -233,14 +275,25 @@ public function beritaUp(Request $request){
             'tahun' => $validate['tahun'],
             'gambar_berita' => $tempat_berita,
         ]);
-
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berita berhasil ditambahkan',
+        ]);
+    }
     return redirect()->route('admin.berita');
 }
 
-public function beritaHapus($id){
+public function beritaHapus(Request $request, $id){
     $berita = Berita::findOrFail($id);
     $berita->delete();
-
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berita berhasil dihapus',
+            'data' => $berita,
+        ]);
+    }
     return redirect()->route('admin.berita');
 }
 
@@ -277,8 +330,14 @@ public function beritaEP(Request $request, $id){
         $file->move(public_path('uploads/berita'), $namaFile);
         $berita->gambar_berita = $namaFile;
     }
-
     $berita->save();
+    if ($request->expectsJson() || $request->is('api/*')) {
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Berita berhasil diperbarui',
+            'data' => $berita,
+        ]);
+    }
     return redirect()->route('admin.berita');
 }
 
@@ -321,13 +380,25 @@ public function tentangUp(Request $request){
             'image_tentang' => $tempat_tentang,
             'image1' => $tempat_tentang1,
         ]);
-
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tentang berhasil ditambahkan',
+            ]);
+        }
         return redirect()->route('admin.tentang');
     }
 
     public function tentangHapus($id){
         $tentang = Tentang::FindOrFail($id);
         $tentang->delete();
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Tentang berhasil dihapus',
+                'data' => $tentang,
+            ]);
+        }
         return redirect()->route('admin.tentang');
     }
 
@@ -355,14 +426,26 @@ public function tentangUp(Request $request){
         Gallery::create([
             'gambar_gallery' => $tempat_gallery,
         ]);
-
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Gallery berhasil ditambahkan',
+            ]);
+        }
         return redirect()->route('admin.gallery');
     }
 
     public function galleryHapus($id){
         $gallery = Gallery::findOrFail($id);
         $gallery->delete();
-        return redirect()->route('admin.gallery')->with('succes', 'Gallery berhasil dihapus');
+        if ($request->expectsJson() || $request->is('api/*')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Gallery berhasil dihapus',
+                'data' => $gallery,
+            ]);
+        }
+        return redirect()->route('admin.gallery');
     }
 
 }

@@ -39,6 +39,7 @@
                             <option value="">-- Pilih Role --</option>
                             <option value="admin">Admin</option>
                             <option value="pegawai">Pegawai</option>
+                            <option value="user">User</option>
                         </select>
                     </div>
 

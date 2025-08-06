@@ -47,9 +47,9 @@ class Controller extends BaseController
             ];
         }
 
-        return view('admin.dashboard', compact('films', 'bioskop', 'dataChart'));
+return view ('admin.dashboard', compact('films', 'bioskop', 'dataChart'));
     }
-    
+
 
     public function dashboardMember(){
         $transaksi = auth()->user()->transaksi()->with('film')->get();
