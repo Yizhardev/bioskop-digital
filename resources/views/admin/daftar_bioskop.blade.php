@@ -3,9 +3,9 @@
 @section('info')
 <div class="container-fluid">
 
-    <h1 class="h3 mb-2 text-gray-800">Daftar Film</h1>
+    <h1 class="h3 mb-2 text-gray-800">Daftar Bioskop</h1>
 
-    <a href="{{ route('admin.create_bioskop') }}" class="btn btn-primary mb-3">+ Tambah Film</a>
+    <a href="{{ route('admin.create_bioskop') }}" class="btn btn-primary mb-3">+ Tambah Bioskop</a>
 
     <div class="card shadow mb-4">
         <div class="card-body">

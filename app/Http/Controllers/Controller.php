@@ -141,9 +141,7 @@ return view ('admin.dashboard', compact('films', 'bioskop', 'dataChart'));
         return view('bioskop', compact('bioskop', 'gallery'));
     }
 
-    /**
-     * Method untuk menampilkan detail bioskop dengan semua gambar
-     */
+
     public function bioskopDetail($id){
         $bioskop = Bioskop::with(['gambarBioskop' => function($query) {
             $query->orderBy('sort_order', 'asc');
@@ -151,12 +149,10 @@ return view ('admin.dashboard', compact('films', 'bioskop', 'dataChart'));
 
         $gallery = Gallery::get();
 
-        return view('bioskopDetail', compact('bioskop', 'gallery'));
+        return view('bioskopFull', compact('bioskop', 'gallery'));
     }
 
-    /**
-     * Method untuk mendapatkan data bioskop dalam format JSON (untuk AJAX)
-     */
+
     public function getBioskopData($id = null)
     {
         if ($id) {
@@ -164,7 +160,7 @@ return view ('admin.dashboard', compact('films', 'bioskop', 'dataChart'));
                 $query->orderBy('sort_order', 'asc');
             }])->findOrFail($id);
 
-            // Format data dengan struktur gambar utama + galeri
+           
             $response = [
                 'id' => $bioskop->id,
                 'nama_bioskop' => $bioskop->nama_bioskop,
