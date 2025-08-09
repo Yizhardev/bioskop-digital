@@ -148,7 +148,7 @@
                             </div>
 
                             <div class="pricing-section">
-                                <div class="main-price">Rp {{ number_format($bioskop->harga_sewa, 0, ',', '.') }}<span class="period">/hari</span></div>
+                                <div class="main-price">Rp {{ number_format($bioskop->harga_sewa, 0, ',', '.') }}<span class="period">/Jam</span></div>
                                 <div class="price-breakdown">
                                     <span class="deposit">Kapasitas: {{ $bioskop->kapasitas }} orang</span>
                                     <span class="available">Tersedia untuk disewa</span>
@@ -406,7 +406,7 @@
                                     </div>
                                     <div class="contact-item">
                                         <i class="bi bi-envelope"></i>
-                                        <span>info@bioskoprent.com</span>
+                                        <span>film@filems.com</span>
                                     </div>
                                 </div>
 
